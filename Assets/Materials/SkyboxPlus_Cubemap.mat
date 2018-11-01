@@ -1,0 +1,35 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!21 &2100000
+Material:
+  serializedVersion: 6
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_Name: SkyboxPlus_Cubemap
+  m_Shader: {fileID: 4800000, guid: f2a20f3ce17b84e938179dc858a385eb, type: 3}
+  m_ShaderKeywords: 
+  m_LightmapFlags: 4
+  m_EnableInstancingVariants: 0
+  m_DoubleSidedGI: 0
+  m_CustomRenderQueue: -1
+  stringTagMap: {}
+  disabledShaderPasses: []
+  m_SavedProperties:
+    serializedVersion: 3
+    m_TexEnvs:
+    - _Tex:
+        m_Texture: {fileID: 8900000, guid: f82d2c81f3e644a9290d55e8a7ea587e, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    m_Floats:
+    - _Exposure: 1.2
+    - _Lod: 0
+    - _LodLevel: 0
+    - _Saturation: 1
+    m_Colors:
+    - _Euler: {r: 0, g: 0, b: 0, a: 1}
+    - _Rotation1: {r: 1, g: 0, b: 0, a: 0}
+    - _Rotation2: {r: 0, g: 1, b: 0, a: 0}
+    - _Rotation3: {r: 0, g: 0, b: 1, a: 0}
+    - _Tint: {r: 0.5, g: 0.5, b: 0.5, a: 1}

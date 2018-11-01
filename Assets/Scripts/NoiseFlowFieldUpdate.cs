@@ -5,6 +5,7 @@ using UnityEngine;
 public class NoiseFlowFieldUpdate : MonoBehaviour {
 
     FastNoise _fastNoise;
+    public FastNoiseUnity _fastNoiseUnity;
 
     public Vector3Int _gridSize;
     public float _cellSize;
@@ -23,6 +24,9 @@ public class NoiseFlowFieldUpdate : MonoBehaviour {
     public float _particleScale, _particleMoveSpeed, _particleRotateSpeed;
 
 
+    public GameObject _linePrefab;
+    [HideInInspector]
+    public List<Transform> _lines;
 
     bool _particleSpawnValidation(Vector3 position) {
 
@@ -50,16 +54,22 @@ public class NoiseFlowFieldUpdate : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
-        _fastNoise = new FastNoise();
+        _fastNoise = _fastNoiseUnity.fastNoise;
+
+        //texture = TubeRendererExamples.Helpers.CreateTileTexture(12);
 
         _flowFieldDrection = new Vector3[_gridSize.x, _gridSize.y, _gridSize.z];
         _particles = new List<FlowFieldParticle>();
+
+        //InstantiateLines();
+        
 
         for (int i = 0; i < _amountOfParticles; i++) {
 
             int attempt = 0;
 
-            while (attempt < 100) {
+            while (attempt < 100)
+            {
                 Vector3 randomPos = new Vector3(
                 Random.Range(this.transform.position.x, this.transform.position.x + _gridSize.x * _cellSize),
                 Random.Range(this.transform.position.y, this.transform.position.y + _gridSize.y * _cellSize),
@@ -72,11 +82,16 @@ public class NoiseFlowFieldUpdate : MonoBehaviour {
                     GameObject particleInstane = (GameObject)Instantiate(_particlePrefab);
                     particleInstane.transform.position = randomPos;
                     particleInstane.transform.parent = this.transform;
+
+                    //texture issue??
+                    //particleInstane.GetComponent<FlowFieldParticle>().tube.GetComponent<Renderer>().sharedMaterial.mainTexture = texture;
+
                     particleInstane.transform.localScale = new Vector3(_particleScale, _particleScale, _particleScale);
                     _particles.Add(particleInstane.GetComponent<FlowFieldParticle>());
                     break;
                 }
-                if (!isValid) {
+                if (!isValid)
+                {
                     attempt++;
                 }
             }
@@ -90,12 +105,17 @@ public class NoiseFlowFieldUpdate : MonoBehaviour {
     {
         CalculateFlowFieldDirections();
         ParticleBehaviour();
+
     }
 
     // Update is called once per frame
     public void CalculateFlowFieldDirections () {
 
+        //_fastNoise = new FastNoise();
+        _fastNoise = _fastNoiseUnity.fastNoise;
+
         _offSet = new Vector3(_offSet.x + (_offSetSpeed.x * Time.deltaTime), _offSet.y + (_offSetSpeed.y * Time.deltaTime), _offSet.z + (_offSetSpeed.z * Time.deltaTime) );
+        int i = 0;
 
         float xOff = 0;
         for (int x = 0; x < _gridSize.x; x++)
@@ -106,15 +126,30 @@ public class NoiseFlowFieldUpdate : MonoBehaviour {
                 float zOff = 0;
                 for (int z = 0; z < _gridSize.z; z++)
                 {
+                    //---- THis is where we can start to manipulate the directions ----//
 
-                    float noise = _fastNoise.GetSimplex(xOff + _offSet.x, yOff + _offSet.y, zOff + _offSet.z) + 1;
-
+                    //float noise = _fastNoise.GetPerlinFractal(xOff + _offSet.x, yOff + _offSet.y, zOff + _offSet.z) + 1;
+                    float noise = _fastNoise.GetNoise(xOff + _offSet.x, yOff + _offSet.y, zOff + _offSet.z) + 1;
                     Vector3 noiseDirection = new Vector3(sphereTransform.position.x - x * Mathf.Cos(noise * Mathf.PI), sphereTransform.position.y - y * Mathf.Sin(noise * Mathf.PI), sphereTransform.position.z - z * Mathf.Cos(noise * Mathf.PI));
+
+                    //Vector3 noiseDirection = new Vector3(sphereTransform.position.x - x, sphereTransform.position.y - y, sphereTransform.position.z - z);
+                    //----------------------------------------------------------------//
+
+
                     _flowFieldDrection[x, y, z] = Vector3.Normalize(noiseDirection);
 
                     Vector3 pos = new Vector3(x, y, z) + transform.position;
                     Vector3 endPos = pos + Vector3.Normalize(noiseDirection);
 
+                    /*
+                    _lines[i].GetChild(1).transform.position = endPos;
+                    
+                    _lines[i].GetComponent<LineRenderer>().startColor = new Color(noiseDirection.normalized.x, noiseDirection.normalized.y, noiseDirection.normalized.z, 0.3f);
+                    _lines[i].GetComponent<LineRenderer>().endColor = new Color(noiseDirection.normalized.x, noiseDirection.normalized.y, noiseDirection.normalized.z, 0.00f);
+                    */
+
+
+                    i++;
                     zOff += _increment;
                 }
                 yOff += _increment;
@@ -123,36 +158,60 @@ public class NoiseFlowFieldUpdate : MonoBehaviour {
         }
     }
 
+
+
     private void ParticleBehaviour() {
         foreach (FlowFieldParticle p in _particles) {
+
+            //p.transform.GetChild(0).transform.gameObject.SetActive(true);
 
             //X edges
             if (p.transform.position.x > this.transform.position.x + (_gridSize.x * _cellSize)) {
                 p.transform.position = new Vector3(this.transform.position.x, p.transform.position.y, p.transform.position.z);
+                //p.transform.GetChild(0).transform.GetComponent<TrailRenderer>().Clear();
+                //p.transform.GetChild(0).transform.gameObject.SetActive(false);
+                p.ResetTubeMesh();
             }
             if (p.transform.position.x < this.transform.position.x) {
                 p.transform.position = new Vector3(this.transform.position.x + (_gridSize.x * _cellSize), p.transform.position.y, p.transform.position.z);
+                //p.transform.GetChild(0).transform.GetComponent<TrailRenderer>().Clear();
+                //p.transform.GetChild(0).transform.gameObject.SetActive(false);
+                p.ResetTubeMesh();
             }
 
             //Y edges
             if (p.transform.position.y > this.transform.position.y + (_gridSize.y * _cellSize))
             {
                 p.transform.position = new Vector3(p.transform.position.x, this.transform.position.y, p.transform.position.z);
+                //p.transform.GetChild(0).transform.GetComponent<TrailRenderer>().Clear();
+                //p.transform.GetChild(0).transform.gameObject.SetActive(false);
+                p.ResetTubeMesh();
             }
             if (p.transform.position.y < this.transform.position.y)
             {
                 p.transform.position = new Vector3(p.transform.position.x, this.transform.position.y + (_gridSize.y * _cellSize), p.transform.position.z);
+                //p.transform.GetChild(0).transform.GetComponent<TrailRenderer>().Clear();
+                // p.transform.GetChild(0).transform.gameObject.SetActive(false);
+                p.ResetTubeMesh();
             }
 
             //Z edges
             if (p.transform.position.z > this.transform.position.z + (_gridSize.z * _cellSize))
             {
                 p.transform.position = new Vector3(p.transform.position.x, p.transform.position.y, this.transform.position.z);
+                //p.transform.GetChild(0).transform.GetComponent<TrailRenderer>().Clear();
+                //p.transform.GetChild(0).transform.gameObject.SetActive(false);
+                p.ResetTubeMesh();
             }
             if (p.transform.position.z < this.transform.position.z)
             {
                 p.transform.position = new Vector3(p.transform.position.x, p.transform.position.y, this.transform.position.z + (_gridSize.z * _cellSize));
+                //p.transform.GetChild(0).transform.GetComponent<TrailRenderer>().Clear();
+                //p.transform.GetChild(0).transform.gameObject.SetActive(false);
+                p.ResetTubeMesh();
             }
+
+            
 
             Vector3Int particlePos = new Vector3Int(
                 Mathf.FloorToInt(Mathf.Clamp((p.transform.position.x - this.transform.position.x)/_cellSize, 0, _gridSize.x - 1)),
@@ -162,17 +221,47 @@ public class NoiseFlowFieldUpdate : MonoBehaviour {
 
             p.ApplyRotation(_flowFieldDrection[particlePos.x, particlePos.y, particlePos.z], _particleRotateSpeed);
             p._moveSpeed = _particleMoveSpeed;
-            p.transform.localScale = new Vector3(_particleScale, _particleScale, _particleScale);
             
-
+            p.transform.localScale = new Vector3(_particleScale, _particleScale, _particleScale);
             
         }
     }
 
+    
     private void OnDrawGizmos()
     {
         Gizmos.color = Color.white;
         Gizmos.DrawWireCube(this.transform.position + new Vector3( (_gridSize.x * _cellSize) * 0.5f, (_gridSize.y * _cellSize) * 0.5f, (_gridSize.z * _cellSize) * 0.5f), new Vector3(_gridSize.x * _cellSize, _gridSize.y * _cellSize, _gridSize.z * _cellSize));
     }
+    
+
+    private void InstantiateLines() {
+
+        _lines = new List<Transform>();
+
+        float xOff = 0;
+        for (int x = 0; x < _gridSize.x; x++)
+        {
+            float yOff = 0;
+            for (int y = 0; y < _gridSize.y; y++)
+            {
+                float zOff = 0;
+                for (int z = 0; z < _gridSize.z; z++)
+                {
+                    Vector3 startPos = new Vector3(x, y, z) + transform.position;
+
+                    GameObject line = (GameObject)Instantiate(_linePrefab);
+                    line.transform.position = startPos;
+                    line.transform.parent = this.transform;
+                    _lines.Add(line.GetComponent<Transform>());
+
+                    zOff += _increment;
+                }
+                yOff += _increment;
+            }
+            xOff += _increment;
+        }
+    }
+
 
 }
