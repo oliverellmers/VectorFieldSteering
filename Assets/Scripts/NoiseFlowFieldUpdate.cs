@@ -61,7 +61,7 @@ public class NoiseFlowFieldUpdate : MonoBehaviour {
         _flowFieldDrection = new Vector3[_gridSize.x, _gridSize.y, _gridSize.z];
         _particles = new List<FlowFieldParticle>();
 
-        //InstantiateLines();
+        InstantiateLines();
         
 
         for (int i = 0; i < _amountOfParticles; i++) {
@@ -148,6 +148,8 @@ public class NoiseFlowFieldUpdate : MonoBehaviour {
                     _lines[i].GetComponent<LineRenderer>().endColor = new Color(noiseDirection.normalized.x, noiseDirection.normalized.y, noiseDirection.normalized.z, 0.00f);
                     */
 
+                    _lines[i].transform.rotation = Quaternion.FromToRotation(Vector3.up, endPos - pos);
+
 
                     i++;
                     zOff += _increment;
@@ -170,13 +172,15 @@ public class NoiseFlowFieldUpdate : MonoBehaviour {
                 p.transform.position = new Vector3(this.transform.position.x, p.transform.position.y, p.transform.position.z);
                 //p.transform.GetChild(0).transform.GetComponent<TrailRenderer>().Clear();
                 //p.transform.GetChild(0).transform.gameObject.SetActive(false);
-                p.ResetTubeMesh();
+
+                //p.ResetTubeMesh();
             }
             if (p.transform.position.x < this.transform.position.x) {
                 p.transform.position = new Vector3(this.transform.position.x + (_gridSize.x * _cellSize), p.transform.position.y, p.transform.position.z);
                 //p.transform.GetChild(0).transform.GetComponent<TrailRenderer>().Clear();
                 //p.transform.GetChild(0).transform.gameObject.SetActive(false);
-                p.ResetTubeMesh();
+
+                //p.ResetTubeMesh();
             }
 
             //Y edges
@@ -185,14 +189,16 @@ public class NoiseFlowFieldUpdate : MonoBehaviour {
                 p.transform.position = new Vector3(p.transform.position.x, this.transform.position.y, p.transform.position.z);
                 //p.transform.GetChild(0).transform.GetComponent<TrailRenderer>().Clear();
                 //p.transform.GetChild(0).transform.gameObject.SetActive(false);
-                p.ResetTubeMesh();
+
+                //p.ResetTubeMesh();
             }
             if (p.transform.position.y < this.transform.position.y)
             {
                 p.transform.position = new Vector3(p.transform.position.x, this.transform.position.y + (_gridSize.y * _cellSize), p.transform.position.z);
                 //p.transform.GetChild(0).transform.GetComponent<TrailRenderer>().Clear();
                 // p.transform.GetChild(0).transform.gameObject.SetActive(false);
-                p.ResetTubeMesh();
+
+                //p.ResetTubeMesh();
             }
 
             //Z edges
@@ -201,14 +207,16 @@ public class NoiseFlowFieldUpdate : MonoBehaviour {
                 p.transform.position = new Vector3(p.transform.position.x, p.transform.position.y, this.transform.position.z);
                 //p.transform.GetChild(0).transform.GetComponent<TrailRenderer>().Clear();
                 //p.transform.GetChild(0).transform.gameObject.SetActive(false);
-                p.ResetTubeMesh();
+
+                //p.ResetTubeMesh();
             }
             if (p.transform.position.z < this.transform.position.z)
             {
                 p.transform.position = new Vector3(p.transform.position.x, p.transform.position.y, this.transform.position.z + (_gridSize.z * _cellSize));
                 //p.transform.GetChild(0).transform.GetComponent<TrailRenderer>().Clear();
                 //p.transform.GetChild(0).transform.gameObject.SetActive(false);
-                p.ResetTubeMesh();
+
+                //p.ResetTubeMesh();
             }
 
             

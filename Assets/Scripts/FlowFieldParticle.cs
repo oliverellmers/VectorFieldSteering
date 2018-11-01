@@ -20,6 +20,7 @@ public class FlowFieldParticle : MonoBehaviour {
 
     void Start () {
         
+        /*
         tube = new GameObject("Tube").AddComponent<TubeRenderer>();
         tube.transform.parent = GameObject.Find("NoiseFlowField").transform;
         tube.GetComponent<MeshRenderer>().material = tubeMaterial;
@@ -50,11 +51,14 @@ public class FlowFieldParticle : MonoBehaviour {
         combinedMesh.AddComponent<MeshRenderer>().material = tubeMaterial;
 
         meshesToCombine = new List<MeshFilter>();
+        */
     }
 	
 	public void Update () {
         
         this.transform.position += transform.forward * _moveSpeed * Time.deltaTime;
+
+        /*
         Vector3 pos = this.transform.position;
         tube.points[0] = pos;
 
@@ -67,6 +71,7 @@ public class FlowFieldParticle : MonoBehaviour {
         }
 
         tube.points = tube.points;
+        */
 
     }
 
@@ -75,6 +80,7 @@ public class FlowFieldParticle : MonoBehaviour {
         transform.rotation = Quaternion.RotateTowards(transform.rotation, targetRotation, rotateSpeed * Time.deltaTime);
     }
 
+    /*
     public void ResetTubeMesh() {
         meshesToCombine.Clear();
         CombineMeshes(tube.GetComponent<MeshFilter>());
@@ -116,6 +122,7 @@ public class FlowFieldParticle : MonoBehaviour {
 
         combinedMesh.GetComponent<MeshFilter>().mesh = combinedMeshMesh;
     }
+    */
 }
 
 
